@@ -80,7 +80,8 @@ write.csv(college_recent_grads,file="college_recent_grads538.csv",row.names = FA
 
 * In your RMarkdown script, please provide the link to this GitHub so the grader can see it.        
 
-#Github of Homework 4: https://github.com/jasonlin3888/doingdatasci2018/Homework4    
+#Github of Homework 4: https://github.com/jasonlin3888/doingdatasci2018/tree/master/Homework4            
+#Github of Repository containing Homework4: https://github.com/jasonlin3888/doingdatasci2018
 
 
 
