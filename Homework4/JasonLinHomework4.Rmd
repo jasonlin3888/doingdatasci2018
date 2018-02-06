@@ -27,6 +27,8 @@ df <- college_recent_grads
 * Use a more detailed list of the data sets to write out the URL in a comment to the related news story.          
 ```{r detailed list}
 vignette("fivethirtyeight",package="fivethirtyeight")
+#https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/          
+#News article about the rate of economic success for certain college majors and how popular it is among students 
 ```                  
 
 * Using R command(s), give the dimensions and column names of this data frame.                
