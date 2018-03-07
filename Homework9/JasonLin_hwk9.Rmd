@@ -1,0 +1,123 @@
+---
+title: "Homework9"
+author: "Jason Lin"
+date: "March 5, 2018"
+output: 
+      html_document:
+          keep_md: TRUE
+---
+#Question 1
+```{r harrypotter}
+fileurl <- "http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1"
+library(XML)
+doc <- htmlTreeParse(fileurl,useInternal=TRUE)
+cast <- xpathSApply(doc,"//span[@class='itemprop']",xmlValue)
+Character <- xpathSApply(doc,"//td[@class='character']",xmlValue)
+library(dplyr)
+Character <- gsub("\n              \n            ","",Character)
+Character <- gsub(" \n                      \n\n              \n          ","",Character)
+Character <- gsub("  \n","",Character)
+Character <- gsub(" \n","",Character)
+Character <- gsub("\n ","",Character)
+Character <- gsub(" /            "," ",Character)
+Character <- gsub("Griphook Professor Filius Flitwick","Griphook Professor / Filius Flitwick",Character)
+dfrole <- as.data.frame(Character)
+dfcast <-as.data.frame(cast)
+dfcombined <- cbind(dfcast,dfrole)
+library(tidyr)
+dfcombinedfinal=extract(dfcombined, cast, c("FirstName", "Surname"), "([^.*]+) (.*)")
+head(dfcombinedfinal,10)
+```            
+
+#Question 2                    
+```{r shootingstats}
+fileurl2 <- "http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs"
+library(XML)
+doc2 <- htmlTreeParse(fileurl2,useInternal=TRUE)
+player <- xpathSApply(doc2,"//tr['PLAYER']",xmlValue)
+playershoot<-player[-1:-20]
+rawstats <- playershoot[c(-1,-2,-20)]
+name <- substring(rawstats,1,17)
+name2 <- gsub("(, ..|, ...|, ....|, .....|, ......|, .......|,)","",name)
+test1 <- substring(rawstats,10,25)
+pos <- gsub("^.*,","",test1)
+pos2 <-substring(pos,1,3)
+pos3 <-gsub("C.","C",pos2)
+test4<-gsub('[[:alpha:],]+', '', rawstats)
+fgm <- substr(test4,1,5)
+fga <- substr(test4,6,9)
+fga2 <- gsub("\\.$","",fga)
+FG_pct <- substr(test4,9,13)
+FG_pct2 <- gsub("^\\d","",FG_pct)
+FG_pct3 <- substr(FG_pct2, 1, 4)
+raw3pm <- substr(test4,13,16)
+raw3pm1 <- gsub("^00","0",raw3pm)
+raw3pm1 <- gsub("^81","1",raw3pm1)
+final3pm <- substr(raw3pm1,1,3)
+final3pm
+raw3pa <- substr(test4,16,19)
+raw3pa1 <- gsub("^41","1",raw3pa)
+raw3pa1 <- gsub("^23","3",raw3pa1)
+final3pa <- substr(raw3pa1,1,3)
+raw3pct <- substr(test4,19,23)
+raw3pct2 <- gsub("^\\d","",raw3pct)
+final3pct <- substr(raw3pct2,1,4)
+rawftm <- substr(test4,23,27)
+rawftm1 <- gsub("14","4",rawftm)
+rawftm1 <- gsub("43","3",rawftm1)
+finalftm <- substr(rawftm1,1,3)
+rawfta <- substr(test4,26,29)
+rawfta1 <- gsub("35","5",rawfta)
+rawfta1 <- gsub("44","4",rawfta1)
+finalfta <- substr(rawfta1,1,3)
+rawftpct <- substr(test4,29,33)
+rawftpct1 <- gsub("20","0",rawftpct)
+finalftpct <- substr(rawftpct1,1,4)
+raw2pm <- substr(test4,33,36)
+raw2pm1 <- gsub("48","8",raw2pm)
+raw2pm1 <- gsub("24","4",raw2pm1)
+finalraw2pm <- substr(raw2pm1,1,3)
+raw2pa <- substr(test4,36,40)
+raw2pa1 <- gsub("316","16",raw2pa)
+raw2pa1 <- gsub("68","8",raw2pa1)
+final2pa <- gsub("\\.$|\\..$","",raw2pa1)
+final2pa<-gsub("16","16.2",final2pa)
+raw2pct <- substr(test4,39,44)
+raw2pct1 <- gsub(".2","",raw2pct)
+raw2pct1 <- gsub("^4","",raw2pct1)
+final2pct <- substr(raw2pct1,1,4)
+rawpps <- substr(test4,43,49)
+rawpps1 <- gsub("^14","",rawpps)
+rawpps1<-gsub("^9","",rawpps1)
+rawpps1<-gsub("\\.$|0\\..$","",rawpps1)
+finalpps <- substr(rawpps1,1,5)
+rawafg <- substr(test4,47,54)
+finalafg <- gsub("^..\\.|^...\\.|^....\\.","0.",rawafg)
+fgm<-as.numeric(fgm)
+fga2<-as.numeric(fga2)
+FG_pct3<-as.numeric(FG_pct3)
+final3pm<-as.numeric(final3pm)
+final3pa<-as.numeric(final3pa)
+final3pct<-as.numeric(final3pct)
+finalftm<-as.numeric(finalftm)
+finalfta<-as.numeric(finalfta)
+finalftpct<-as.numeric(finalftpct)
+finalraw2pm<-as.numeric(finalraw2pm)
+final2pa<-as.numeric(final2pa)
+final2pct<-as.numeric(final2pct)
+finalpps<-as.numeric(finalpps)
+finalafg<-as.numeric(finalafg)
+shootingstats <- data.frame(name2, pos3, fgm, fga2,  FG_pct3, final3pm,final3pa,final3pct,finalftm,finalfta,finalftpct,finalraw2pm,final2pa,final2pct,finalpps,finalafg)
+names(shootingstats)<-c("Name","Position","FGM","FGA","FGpct","PM3","PA3","Ppct3","FTM","FTA","FTpct","PM2","PA2","Ppct2","PPS","AFGpct")
+shootingstats
+str(shootingstats)
+```            
+
+#Bar Graph of Field Goals Percentage per Game by Players                 
+```{r barplot}
+library(ggplot2)
+
+ggplot(shootingstats,aes(Name,FGpct, fill=Position))+
+    geom_bar(stat="identity")+
+    theme_minimal()+ggtitle("Field Goals Percentage per Game by Player")+xlab("Players")+ylab("Field Goals Percentage per Game")+theme(plot.title = element_text(hjust = 0.5,size=22), axis.text.x=element_text(angle=90,hjust=1.25,vjust=0.2,size=10))
+```
